@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  file-inclusion:
+    build: .
+    ports:
+      - "5003:5000"
+    environment:
+      - FLASK_ENV=production
