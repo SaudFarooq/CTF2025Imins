@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  xss-basic:
+    build: ./xss-basic
+    ports:
+      - "8001:8000"
+  idor-basic:
+    build: ./idor-basic
+    ports:
+      - "8002:8000"
+  sqli-medium:
+    build: ./sqli-medium
+    ports:
+      - "8003:8000"
+  ssti-medium:
+    build: ./ssti-medium
+    ports:
+      - "8004:8000"
+  path-traversal:
+    build: ./path-traversal
+    ports:
+      - "8005:8000"
