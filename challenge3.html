@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 3: File Upload Exploit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .header p {
+            opacity: 0.8;
+        }
+        
+        .upload-section {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-form {
+            margin-bottom: 20px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.02);
+        }
+        
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+        
+        .warning {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid #ffa500;
+            color: #ffa500;
+        }
+        
+        .uploaded-files {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .file-item {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-name {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-link {
+            color: #00ffff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #00ffff;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .file-link:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        .flag {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid #ffff00;
+            border-radius: 5px;
+            padding: 15px;
+            color: #ffff00;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .hint {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            border-radius: 5px;
+            padding: 15px;
+            color: #ffff00;
+            font-size: 0.9em;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        
+        .back-link:hover {
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .shell-output {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Challenges</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📁 File Upload Exploit</h1>
+            <p>Upload a malicious file to gain remote code execution</p>
+        </div>
+        
+        <div class="upload-section">
+            <h3>File Upload</h3>
+            <p>Upload your files here. Only image files are allowed.</p>
+            
+            <form class="upload-form" id="uploadForm">
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif" required>
+                </div>
+                <button type="submit">Upload File</button>
+            </form>
+            
+            <div id="uploadMessage"></div>
+        </div>
+        
+        <div class="uploaded-files" id="uploadedFiles">
+            <h3>Uploaded Files</h3>
+            <div id="fileList">
+                <p>No files uploaded yet.</p>
+            </div>
+        </div>
+        
+        <div id="shellOutput" class="shell-output" style="display: none;">
+            <strong>Shell Output:</strong><br>
+            <div id="shellContent"></div>
+        </div>
+        
+        <div class="hint">
+            <strong>💡 Hint:</strong> The server only checks file extensions, not file content. Try uploading a PHP file with a .jpg extension, or use double extensions like .php.jpg. You can also try uploading a file with a malicious filename that could be executed.
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+        
+        // Simulate file type checking (vulnerable)
+        function checkFileType(fileName) {
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+            const extension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+            return allowedExtensions.includes(extension);
+        }
+        
+        // Simulate file execution
+        function executeFile(fileName, content) {
+            // Simulate PHP execution
+            if (fileName.toLowerCase().includes('.php') || 
+                fileName.toLowerCase().includes('shell') ||
+                fileName.toLowerCase().includes('cmd')) {
+                
+                // Simulate command execution
+                const commands = [
+                    'whoami',
+                    'ls -la',
+                    'cat /etc/passwd',
+                    'id',
+                    'pwd'
+                ];
+                
+                let output = 'Command executed successfully!\n\n';
+                commands.forEach(cmd => {
+                    output += `$ ${cmd}\n`;
+                    if (cmd === 'whoami') output += 'www-data\n';
+                    else if (cmd === 'ls -la') output += 'total 8\ndrwxr-xr-x 2 www-data www-data 4096 Jan 1 00:00 .\ndrwxr-xr-x 3 root root 4096 Jan 1 00:00 ..\n-rw-r--r-- 1 www-data www-data 0 Jan 1 00:00 flag.txt\n';
+                    else if (cmd === 'cat /etc/passwd') output += 'root:x:0:0:root:/root:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\n';
+                    else if (cmd === 'id') output += 'uid=33(www-data) gid=33(www-data) groups=33(www-data)\n';
+                    else if (cmd === 'pwd') output += '/var/www/html/uploads\n';
+                    output += '\n';
+                });
+                
+                output += '\n🎉 FLAG FOUND: CTF{file_upload_rce_success}';
+                
+                return output;
+            }
+            return null;
+        }
+        
+        function updateFileList() {
+            const fileListDiv = document.getElementById('fileList');
+            
+            if (uploadedFiles.length === 0) {
+                fileListDiv.innerHTML = '<p>No files uploaded yet.</p>';
+                return;
+            }
+            
+            fileListDiv.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="file-item">
+                    <span class="file-name">${file.name}</span>
+                    <div class="file-actions">
+                        <a href="#" class="file-link" onclick="viewFile(${index})">View</a>
+                        <a href="#" class="file-link" onclick="executeFile(${index})">Execute</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function viewFile(index) {
+            const file = uploadedFiles[index];
+            alert(`File: ${file.name}\nSize: ${file.size} bytes\nType: ${file.type}`);
+        }
+        
+        function executeFile(index) {
+            const file = uploadedFiles[index];
+            const output = executeFile(file.name, file.content);
+            
+            if (output) {
+                document.getElementById('shellContent').textContent = output;
+                document.getElementById('shellOutput').style.display = 'block';
+            } else {
+                alert('File cannot be executed or no output generated.');
+            }
+        }
+        
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const messageDiv = document.getElementById('uploadMessage');
+            
+            if (!file) {
+                messageDiv.innerHTML = '<div class="message error">Please select a file to upload.</div>';
+                return;
+            }
+            
+            // Check file type (vulnerable - only checks extension)
+            if (!checkFileType(file.name)) {
+                messageDiv.innerHTML = '<div class="message error">❌ Only image files (.jpg, .jpeg, .png, .gif) are allowed!</div>';
+                return;
+            }
+            
+            // Simulate file upload
+            const fileData = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                content: 'Simulated file content...'
+            };
+            
+            uploadedFiles.push(fileData);
+            updateFileList();
+            
+            messageDiv.innerHTML = '<div class="message success">✅ File uploaded successfully!</div>';
+            
+            // Check if file might be executable
+            if (file.name.toLowerCase().includes('.php') || 
+                file.name.toLowerCase().includes('shell') ||
+                file.name.toLowerCase().includes('cmd')) {
+                messageDiv.innerHTML += '<div class="message warning">⚠️ Warning: This file might be executable!</div>';
+            }
+        });
+        
+        // Initialize
+        updateFileList();
+    </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 1: SQL Injection Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .header p {
+            opacity: 0.8;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.02);
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+        
+        .hint {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            border-radius: 5px;
+            color: #ffff00;
+            font-size: 0.9em;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        
+        .back-link:hover {
+            text-shadow: 0 0 10px #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Challenges</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔐 SQL Injection Login</h1>
+            <p>Bypass the login system using SQL injection</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit">Login</button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <div class="hint">
+            <strong>💡 Hint:</strong> The application uses a vulnerable SQL query. Try using SQL injection techniques to bypass authentication. Common payloads include: <code>' OR '1'='1</code> or <code>' OR 1=1--</code>
+        </div>
+    </div>
+
+    <script>
+        // Simulated vulnerable database
+        const users = [
+            { id: 1, username: 'admin', password: 'secretpassword123' },
+            { id: 2, username: 'user1', password: 'password123' },
+            { id: 3, username: 'test', password: 'test123' }
+        ];
+        
+        // Simulated vulnerable SQL query (for demonstration)
+        function simulateSQLQuery(username, password) {
+            // This simulates: SELECT * FROM users WHERE username = '$username' AND password = '$password'
+            // In real vulnerable code, this would be: "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'"
+            
+            console.log(`Simulated query: SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`);
+            
+            // Check for SQL injection patterns
+            if (username.includes("'") || password.includes("'")) {
+                // Simulate SQL injection detection
+                if (username.includes("' OR") || password.includes("' OR") || 
+                    username.includes("' or") || password.includes("' or") ||
+                    username.includes("'||") || password.includes("'||") ||
+                    username.includes("'--") || password.includes("'--") ||
+                    username.includes("'/*") || password.includes("'/*") ||
+                    username.includes("'#") || password.includes("'#")) {
+                    
+                    console.log("SQL injection detected - query modified!");
+                    return { success: true, user: { id: 999, username: 'hacker', role: 'admin' } };
+                }
+            }
+            
+            // Normal authentication
+            const user = users.find(u => u.username === username && u.password === password);
+            return user ? { success: true, user } : { success: false };
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            const result = simulateSQLQuery(username, password);
+            
+            if (result.success) {
+                messageDiv.innerHTML = `
+                    <div class="message success">
+                        ✅ Login successful!<br>
+                        Welcome, ${result.user.username}!<br>
+                        ${result.user.role === 'admin' ? 
+                            '<br>🎉 <strong>FLAG: CTF{sql_injection_bypass_success}</strong><br>You successfully bypassed the authentication using SQL injection!' : 
+                            'You logged in normally.'}
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message error">
+                        ❌ Login failed!<br>
+                        Invalid username or password.
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
