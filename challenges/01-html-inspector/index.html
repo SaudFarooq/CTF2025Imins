@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CyberCorp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 20px;
+        }
+        .logo {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .welcome-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .feature h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .feature p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .cta-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .footer {
+            margin-top: 40px;
+            color: #999;
+            font-size: 0.9em;
+        }
+        /* Hidden flag for developers */
+        .dev-notes {
+            display: none;
+            /* TODO: Remove this before production */
+            /* Flag: CTF{1nsp3ct_th3_s0urc3_luk3} */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️ CyberCorp</div>
+        <div class="welcome-text">
+            Welcome to CyberCorp's secure portal! We're the leading cybersecurity company 
+            protecting businesses worldwide from digital threats.
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🔒 Secure</h3>
+                <p>Military-grade encryption protecting your data</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Fast</h3>
+                <p>Lightning-fast threat detection and response</p>
+            </div>
+            <div class="feature">
+                <h3>🌍 Global</h3>
+                <p>24/7 monitoring across all continents</p>
+            </div>
+        </div>
+        
+        <button class="cta-button" onclick="alert('Coming Soon! Our portal is under development.')">
+            Access Portal
+        </button>
+        
+        <div class="footer">
+            © 2024 CyberCorp. All rights reserved.
+            <br>
+            <small>Looking for something? Try inspecting our code! 👀</small>
+        </div>
+    </div>
+    
+    <!-- Development notes - remove before production -->
+    <div class="dev-notes">
+        <p>Remember to update the security configurations</p>
+        <p>Database credentials: admin/password123</p>
+        <!-- Flag hidden here: CTF{1nsp3ct_th3_s0urc3_luk3} -->
+    </div>
+    
+    <script>
+        // Analytics tracking
+        console.log("Page loaded successfully");
+        
+        // Easter egg for curious developers
+        console.log("🎯 Hint: Sometimes the most obvious places hide the best secrets!");
+        
+        // TODO: Implement proper authentication
+        // Note: Flag format is CTF{...}
+    </script>
+</body>
+</html>
